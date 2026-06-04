@@ -12,7 +12,10 @@
 --     real patients added later.
 --   * 5 sample doctors/providers (username doctor001..doctor005)
 --     wired into the Physicians ACL group so they can log in to the
---     OpenEMR admin UI.
+--     OpenEMR admin UI and see their calendar/agenda. Each is set
+--     calendar=1 so they appear as schedulable providers in the
+--     calendar (the provider dropdown filters on authorized=1 AND
+--     calendar=1; see UserService::searchUsersForCalendar).
 --
 -- Password for every sample user: 0p3n3MR!
 -- Stored as a pre-computed bcrypt hash (cost 12) generated and
@@ -187,36 +190,38 @@ WHERE p.pubpid = 'PAHO-SAMPLE-PATIENT-010'
 -- ============================================================
 -- users.id is AUTO_INCREMENT, so we omit it. Idempotency guard is
 -- on username (BINARY-compared at login). authorized=1 marks the
--- user as a clinician; active=1 lets login proceed.
+-- user as a clinician; active=1 lets login proceed; calendar=1 makes
+-- the provider show up in the calendar's schedulable-provider list
+-- (the dropdown query filters on authorized=1 AND calendar=1).
 
-INSERT INTO users (username, fname, lname, email, authorized, active, facility_id)
-SELECT 'doctor001', 'Alejandro', 'Fuentes',  'alejandro.fuentes@emailpaciente.com', 1, 1, 3
+INSERT INTO users (username, fname, lname, email, authorized, active, calendar, facility_id)
+SELECT 'doctor001', 'Alejandro', 'Fuentes',  'alejandro.fuentes@emailpaciente.com', 1, 1, 1, 3
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'doctor001');
 
-INSERT INTO users (username, fname, lname, email, authorized, active, facility_id)
-SELECT 'doctor002', 'Carolina',  'Salazar',  'carolina.salazar@emailpaciente.com',  1, 1, 3
+INSERT INTO users (username, fname, lname, email, authorized, active, calendar, facility_id)
+SELECT 'doctor002', 'Carolina',  'Salazar',  'carolina.salazar@emailpaciente.com',  1, 1, 1, 3
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'doctor002');
 
-INSERT INTO users (username, fname, lname, email, authorized, active, facility_id)
-SELECT 'doctor003', 'Ricardo',   'Benitez',  'ricardo.benitez@emailpaciente.com',   1, 1, 3
+INSERT INTO users (username, fname, lname, email, authorized, active, calendar, facility_id)
+SELECT 'doctor003', 'Ricardo',   'Benitez',  'ricardo.benitez@emailpaciente.com',   1, 1, 1, 3
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'doctor003');
 
-INSERT INTO users (username, fname, lname, email, authorized, active, facility_id)
-SELECT 'doctor004', 'Daniela',   'Cardenas', 'daniela.cardenas@emailpaciente.com',  1, 1, 3
+INSERT INTO users (username, fname, lname, email, authorized, active, calendar, facility_id)
+SELECT 'doctor004', 'Daniela',   'Cardenas', 'daniela.cardenas@emailpaciente.com',  1, 1, 1, 3
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'doctor004');
 
-INSERT INTO users (username, fname, lname, email, authorized, active, facility_id)
-SELECT 'doctor005', 'Fernando',  'Cabrera',  'fernando.cabrera@emailpaciente.com',  1, 1, 3
+INSERT INTO users (username, fname, lname, email, authorized, active, calendar, facility_id)
+SELECT 'doctor005', 'Fernando',  'Cabrera',  'fernando.cabrera@emailpaciente.com',  1, 1, 1, 3
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'doctor005');
 
 -- Sync provider names/emails for any sample doctors that already
 -- exist from a previous run. Keyed on username, so only our 5
 -- sample rows are touched.
-UPDATE users SET fname='Alejandro', lname='Fuentes',  email='alejandro.fuentes@emailpaciente.com' WHERE username='doctor001';
-UPDATE users SET fname='Carolina',  lname='Salazar',  email='carolina.salazar@emailpaciente.com'  WHERE username='doctor002';
-UPDATE users SET fname='Ricardo',   lname='Benitez',  email='ricardo.benitez@emailpaciente.com'   WHERE username='doctor003';
-UPDATE users SET fname='Daniela',   lname='Cardenas', email='daniela.cardenas@emailpaciente.com'  WHERE username='doctor004';
-UPDATE users SET fname='Fernando',  lname='Cabrera',  email='fernando.cabrera@emailpaciente.com'  WHERE username='doctor005';
+UPDATE users SET fname='Alejandro', lname='Fuentes',  email='alejandro.fuentes@emailpaciente.com', calendar=1 WHERE username='doctor001';
+UPDATE users SET fname='Carolina',  lname='Salazar',  email='carolina.salazar@emailpaciente.com',  calendar=1 WHERE username='doctor002';
+UPDATE users SET fname='Ricardo',   lname='Benitez',  email='ricardo.benitez@emailpaciente.com',   calendar=1 WHERE username='doctor003';
+UPDATE users SET fname='Daniela',   lname='Cardenas', email='daniela.cardenas@emailpaciente.com',  calendar=1 WHERE username='doctor004';
+UPDATE users SET fname='Fernando',  lname='Cabrera',  email='fernando.cabrera@emailpaciente.com',  calendar=1 WHERE username='doctor005';
 
 
 -- ============================================================
