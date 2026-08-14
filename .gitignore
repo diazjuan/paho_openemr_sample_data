@@ -1,0 +1,3 @@
+# Local backups kept before regenerating the seed data
+*.bak
+*.bak-*
